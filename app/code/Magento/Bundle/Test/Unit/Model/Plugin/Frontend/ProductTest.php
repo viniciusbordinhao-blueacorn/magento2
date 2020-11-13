@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\Bundle\Test\Unit\Model\Plugin\Frontend;
 
 use Magento\Bundle\Model\Plugin\Frontend\Product as ProductPlugin;
+use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Bundle\Model\Product\Type;
 use Magento\Catalog\Model\Product;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -24,12 +25,23 @@ class ProductTest extends TestCase
     /** @var  MockObject|\Magento\Catalog\Model\Product */
     private $product;
 
+    /**
+     * @var MockObject|\Magento\Catalog\Model\ResourceModel\Product
+     */
+    private $resource;
+
     protected function setUp(): void
     {
         $this->product = $this->getMockBuilder(Product::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getEntityId'])
+            ->setMethods(['getTypeId'])
             ->getMock();
+
+        $productChildIds = [
+            1 => [1, 2, 5, 100500],
+            12 => [7, 22, 45, 24612]
+        ];
+        $this->product->setData('child_ids', $productChildIds);
 
         $this->type = $this->getMockBuilder(Type::class)
             ->disableOriginalConstructor()
@@ -63,12 +75,9 @@ class ProductTest extends TestCase
             Product::CACHE_TAG . '_' . 24612,
         ];
         $this->product->expects($this->once())
-            ->method('getEntityId')
-            ->willReturn($id);
-        $this->type->expects($this->once())
-            ->method('getChildrenIds')
-            ->with($id)
-            ->willReturn($childIds);
+            ->method('getTypeId')
+            ->willReturn(ProductType::TYPE_BUNDLE);
+
         $identities = $this->plugin->afterGetIdentities($this->product, $baseIdentities);
         $this->assertEquals($expectedIdentities, $identities);
     }

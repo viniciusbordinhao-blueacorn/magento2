@@ -16,4 +16,7 @@
     <type name="Magento\Catalog\Model\Product">
         <plugin name="bundle" type="Magento\Bundle\Model\Plugin\Frontend\Product" sortOrder="100" />
     </type>
+    <type name="Magento\Catalog\Model\ResourceModel\Product">
+        <plugin name="loadBundleChild" type="Magento\Bundle\Plugin\Model\ResourceModel\Product" sortOrder="100" />
+    </type>
 </config>
